@@ -31,3 +31,18 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
+/**
+ * PHPDoc Example
+ * 
+ * Short Description.
+ * 
+ * Longer and more detailed description.
+ * 
+ * @param type $param_a Description.
+ * @param type $param_b Description.
+ * @return type
+ */
+function pdev_function( $param_a, $param_b ) {
+    // Do stuff.
+}
