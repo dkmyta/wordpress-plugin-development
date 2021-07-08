@@ -85,3 +85,18 @@ function pdev_help_page() {
 function pdev_uninstall_page() {
 
 }
+
+add_action( 'admin_menu', 'pdev_create_submenu' );
+             
+function pdev_create_submenu() {
+
+    //create a submenu under Settings
+    add_options_page( 'PDEV Plugin Settings', 'PDEV Settings', 'manage_options',
+        'pdev_plugin', 'pdev_plugin_option_page' );
+             
+}
+
+//placerholder function for the options page
+function pdev_plugin_option_page() {
+
+}
