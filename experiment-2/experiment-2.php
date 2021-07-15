@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       My Plugin
+ * Plugin Name:       Dean's Plugin
  * Plugin URI:        https://example.com/plugins/pdev
  * Description:       A short description of the plugin.
  * Version:           1.0.0
@@ -93,7 +93,7 @@ add_action( 'admin_menu', 'pdev_plugin_add_settings_menu' );
 
 function pdev_plugin_add_settings_menu() {
 
-    add_options_page( 'PDEV Plugin Settings', 'PDEV Settings', 'manage_options',
+    add_options_page( 'Dean\'s Plugin Settings', 'Dean\'s Plugin Settings', 'manage_options',
         'pdev_plugin', 'pdev_plugin_option_page' );
 
 }
@@ -102,7 +102,7 @@ function pdev_plugin_add_settings_menu() {
 function pdev_plugin_option_page() {
     ?>
     <div class="wrap">
-	    <h2>My plugin</h2>
+	    <h2>Dean's Plugin</h2>
 	    <form action="options.php" method="post">
 		    <?php 
             settings_fields( 'pdev_plugin_options' );
@@ -132,7 +132,7 @@ function pdev_plugin_admin_init(){
     // Add a settings section
     add_settings_section( 
     	'pdev_plugin_main', 
-    	'PDEV Plugin Settings',
+    	'Dean\'s Plugin Settings',
         'pdev_plugin_section_text', 
         'pdev_plugin' 
     );
@@ -147,20 +147,20 @@ function pdev_plugin_admin_init(){
     );
 
     
-    // Create our settings field for favorite holiday
+    // Create our settings field for level
     add_settings_field( 
-    	'pdev_plugin_fav_holiday', 
-    	'Favorite Holiday',
-        'pdev_plugin_setting_fav_holiday', 
+    	'pdev_plugin_level', 
+    	'Level',
+        'pdev_plugin_setting_level', 
         'pdev_plugin', 
         'pdev_plugin_main' 
     );
 
-    // Create our settings field for beast mode
+    // Create our settings field for mode
     add_settings_field( 
-    	'pdev_plugin_beast_mode', 
-    	'Enable Beast Mode?',
-        'pdev_plugin_setting_beast_mode', 
+    	'pdev_plugin_mode', 
+    	'Enable Mode?',
+        'pdev_plugin_setting_mode', 
         'pdev_plugin', 
         'pdev_plugin_main' 
     );
@@ -187,24 +187,24 @@ function pdev_plugin_setting_name() {
 
 }
 
-// Display and select the favorite holiday select field
-function pdev_plugin_setting_fav_holiday() {
+// Display and select the level select field
+function pdev_plugin_setting_level() {
 
-    // Get option 'fav_holiday' value from the database
-    // Set to 'Halloween' as a default if the option does not exist
-	$options = get_option('pdev_plugin_options', [ 'fav_holiday' => 'Halloween' ] );
-	$fav_holiday = $options['fav_holiday'];
+    // Get option 'level' value from the database
+    // Set to 0 as a default if the option does not exist
+	$options = get_option('pdev_plugin_options', [ 'level' => 0 ] );
+	$level = $options['level'];
 
-	// Define the select option values for favorite holiday
-	$items = array( 'Halloween', 'Christmas', 'New Years');
+	// Define the select option values for level
+	$items = array( 0, 1, 2, 3, 4, 5 );
 	
-	echo "<select id='fav_holiday' name='pdev_plugin_options[fav_holiday]'>";
+	echo "<select id='level' name='pdev_plugin_options[level]'>";
 	
 	foreach( $items as $item ) {
 
 		// Loop through the option values
 		// If saved option matches the option value, select it
-		echo "<option value='" . esc_attr( $item ) . "' ".selected( $fav_holiday, $item, false ).">" . esc_html( $item ) . "</option>";
+		echo "<option value='" . esc_attr( $item ) . "' ".selected( $level, $item, false ).">" . esc_html( $item ) . "</option>";
 	
 	}
 
@@ -212,13 +212,13 @@ function pdev_plugin_setting_fav_holiday() {
 
 }
 
-//Display and set the Beast Mode radion button field
-function pdev_plugin_setting_beast_mode() {
+//Display and set the Mode radion button field
+function pdev_plugin_setting_mode() {
 
-	// Get option 'beast_mode' value from the database
+	// Get option 'mode' value from the database
     // Set to 'disabled' as a default if the option does not exist
-	$options = get_option( 'pdev_plugin_options', [ 'beast_mode' => 'disabled' ] );
-	$beast_mode = $options['beast_mode'];
+	$options = get_option( 'pdev_plugin_options', [ 'mode' => 'disabled' ] );
+	$mode = $options['mode'];
 	
 	// Define the radio button options
 	$items = array( 'enabled', 'disabled' );
@@ -226,7 +226,7 @@ function pdev_plugin_setting_beast_mode() {
 	foreach( $items as $item ) {
 
 		// Loop the two radio button options and select if set in the option value
-		echo "<label><input " . checked( $beast_mode, $item, false ) . " value='" . esc_attr( $item ) . "' name='pdev_plugin_options[beast_mode]' type='radio' />" . esc_html( $item ) . "</label><br />";
+		echo "<label><input " . checked( $mode, $item, false ) . " value='" . esc_attr( $item ) . "' name='pdev_plugin_options[mode]' type='radio' />" . esc_html( $item ) . "</label><br />";
 
 	}
 
@@ -253,8 +253,8 @@ function pdev_plugin_validate_options( $input ) {
     }
         
     // Sanitize the data we are receiving 
-    $valid['fav_holiday'] = sanitize_text_field( $input['fav_holiday'] );
-    $valid['beast_mode'] = sanitize_text_field( $input['beast_mode'] );
+    $valid['level'] = sanitize_text_field( $input['level'] );
+    $valid['mode'] = sanitize_text_field( $input['mode'] );
 
     return $valid;
 }
