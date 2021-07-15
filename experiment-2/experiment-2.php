@@ -47,6 +47,7 @@ function pdev_function( $param_a, $param_b ) {
     // Do stuff.
 }
 
+/* Comment out dashboard menu item and submenu items
 add_action( 'admin_menu', 'pdev_create_menu' );
              
 function pdev_create_menu() {
@@ -85,6 +86,7 @@ function pdev_help_page() {
 function pdev_uninstall_page() {
 
 }
+*/
 
 // Add a menu for our option page
 add_action( 'admin_menu', 'pdev_plugin_add_settings_menu' );
