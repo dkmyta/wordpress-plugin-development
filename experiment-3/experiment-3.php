@@ -259,7 +259,7 @@ function pdev_plugin_validate_options( $input ) {
     return $valid;
 }
 
-
+// Nonce Example
 add_action( 'admin_menu', 'pdev_nonce_example_menu'   );
 add_action( 'admin_init', 'pdev_nonce_example_verify' );
 
