@@ -278,7 +278,8 @@ function pdev_plugin_setting_mode() {
     // Set to 'false' as a default if the option does not exist
 	$options = get_option( 'pdev_plugin_options' );
 	$mode = $options['mode'];
-	
+
+    echo "<input value='0' name='pdev_plugin_options[mode]' type='hidden' />";
     echo "<input " . checked( 1, $mode, false ) . " value='1' name='pdev_plugin_options[mode]' type='checkbox' />";
 
 }
