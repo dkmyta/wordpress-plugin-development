@@ -137,15 +137,23 @@ function pdev_plugin_admin_init(){
         'pdev_plugin' 
     );
     
-    // Create our settings field for name
+    // Create our settings field for fname
     add_settings_field( 
-    	'pdev_plugin_name', 
-    	'Your Name',
-        'pdev_plugin_setting_name', 
+    	'pdev_plugin_fname', 
+    	'First Name',
+        'pdev_plugin_setting_fname', 
         'pdev_plugin', 
         'pdev_plugin_main' 
     );
 
+    // Create our settings field for lname
+    add_settings_field( 
+        'pdev_plugin_lname', 
+        'Last Name',
+        'pdev_plugin_setting_lname', 
+        'pdev_plugin', 
+        'pdev_plugin_main' 
+    );
     
     // Create our settings field for level
     add_settings_field( 
@@ -156,11 +164,29 @@ function pdev_plugin_admin_init(){
         'pdev_plugin_main' 
     );
 
-    // Create our settings field for mode
+    // Create our radio settings field for gender
+    add_settings_field( 
+    	'pdev_plugin_gender', 
+    	'Gender',
+        'pdev_plugin_setting_gender', 
+        'pdev_plugin', 
+        'pdev_plugin_main' 
+    );
+    
+    // Create our checkbox setting field for mode
     add_settings_field( 
     	'pdev_plugin_mode', 
     	'Enable Mode?',
         'pdev_plugin_setting_mode', 
+        'pdev_plugin', 
+        'pdev_plugin_main' 
+    );
+
+    // Create our textarea setting field for bio
+    add_settings_field( 
+    	'pdev_plugin_bio', 
+    	'Bio',
+        'pdev_plugin_setting_bio', 
         'pdev_plugin', 
         'pdev_plugin_main' 
     );
@@ -174,16 +200,29 @@ function pdev_plugin_section_text() {
 
 }
         
-// Display and fill the Name text form field
-function pdev_plugin_setting_name() {
+// Display and fill the First Name text form field
+function pdev_plugin_setting_fname() {
 
     // Get option 'text_string' value from the database
     $options = get_option( 'pdev_plugin_options' );
-    $name = $options['name'];
+    $fname = $options['fname'];
 
     // Echo the field
-    echo "<input id='name' name='pdev_plugin_options[name]'
-        type='text' value='" . esc_attr( $name ) . "' />";
+    echo "<input id='name' name='pdev_plugin_options[fname]'
+        type='text' value='" . esc_attr( $fname ) . "' />";
+
+}
+
+// Display and fill the Last Name text form field
+function pdev_plugin_setting_lname() {
+
+    // Get option 'text_string' value from the database
+    $options = get_option( 'pdev_plugin_options' );
+    $lname = $options['lname'];
+
+    // Echo the field
+    echo "<input id='name' name='pdev_plugin_options[lname]'
+        type='text' value='" . esc_attr( $lname ) . "' />";
 
 }
 
@@ -204,7 +243,7 @@ function pdev_plugin_setting_level() {
 
 		// Loop through the option values
 		// If saved option matches the option value, select it
-		echo "<option value='" . esc_attr( $item ) . "' ".selected( $level, $item, false ).">" . esc_html( $item ) . "</option>";
+		echo "<option value='" . esc_attr( $item ) . "' " . selected( $level, $item, false ) . ">" . esc_html( $item ) . "</option>";
 	
 	}
 
@@ -212,36 +251,79 @@ function pdev_plugin_setting_level() {
 
 }
 
-//Display and set the Mode radion button field
-function pdev_plugin_setting_mode() {
+//Display and set the Gender radion button field
+function pdev_plugin_setting_gender() {
 
-	// Get option 'mode' value from the database
-    // Set to 'disabled' as a default if the option does not exist
-	$options = get_option( 'pdev_plugin_options', [ 'mode' => 'disabled' ] );
-	$mode = $options['mode'];
+	// Get option 'gender' value from the database
+    // Set to 'Male' as a default if the option does not exist
+	$options = get_option( 'pdev_plugin_options', [ 'gender' => 'Male' ] );
+	$gender = $options['gender'];
 	
 	// Define the radio button options
-	$items = array( 'enabled', 'disabled' );
+	$items = array( 'Male', 'Female', 'Other' );
 
 	foreach( $items as $item ) {
 
-		// Loop the two radio button options and select if set in the option value
-		echo "<label><input " . checked( $mode, $item, false ) . " value='" . esc_attr( $item ) . "' name='pdev_plugin_options[mode]' type='radio' />" . esc_html( $item ) . "</label><br />";
+		// Loop the three radio button options and select if set in the option value
+		echo "<label><input " . checked( $gender, $item, false ) . " value='" . esc_attr( $item ) . "' name='pdev_plugin_options[gender]' type='radio' />" . esc_html( $item ) . "</label>&nbsp&nbsp";
 
 	}
+
+}
+
+//Display and set the Mode checkbox button field
+function pdev_plugin_setting_mode() {
+
+	// Get option 'mode' value from the database
+    // Set to 'false' as a default if the option does not exist
+	$options = get_option( 'pdev_plugin_options' );
+	$mode = $options['mode'];
+
+    echo "<input value='0' name='pdev_plugin_options[mode]' type='hidden' />";
+    echo "<input " . checked( 1, $mode, false ) . " value='1' name='pdev_plugin_options[mode]' type='checkbox' />";
+
+}
+
+// Display and fill the Bio text form field
+function pdev_plugin_setting_bio() {
+
+    // Get option 'text_string' value from the database
+    // Set to 'Enter text here' as a default if the option does not exist
+    $options = get_option( 'pdev_plugin_options', [ 'bio' => 'Enter text here'] );
+    $bio = $options['bio'];
+
+    // Echo the field
+    echo "<textarea id='bio' name='pdev_plugin_options[bio]'>" . $bio . "</textarea>";
 
 }
 
 // Validate user input for all three options
 function pdev_plugin_validate_options( $input ) {
 
-	// Only allow letters and spaces for the name
-    $valid['name'] = preg_replace(
+	// Only allow letters and spaces for the fname
+    $valid['fname'] = preg_replace(
         '/[^a-zA-Z\s]/',
         '',
-        $input['name'] );
+        $input['fname'] );
         
-    if( $valid['name'] !== $input['name'] ) {
+    if( $valid['fname'] !== $input['fname'] ) {
+
+        add_settings_error(
+            'pdev_plugin_text_string',
+            'pdev_plugin_texterror',
+            'Incorrect value entered! Please only input letters and spaces.',
+            'error'
+        );
+
+    }
+
+    // Only allow letters and spaces for the lname
+    $valid['lname'] = preg_replace(
+        '/[^a-zA-Z\s]/',
+        '',
+        $input['lname'] );
+        
+    if( $valid['lname'] !== $input['lname'] ) {
 
         add_settings_error(
             'pdev_plugin_text_string',
@@ -254,7 +336,9 @@ function pdev_plugin_validate_options( $input ) {
         
     // Sanitize the data we are receiving 
     $valid['level'] = sanitize_text_field( $input['level'] );
+    $valid['gender'] = sanitize_text_field( $input['gender'] );
     $valid['mode'] = sanitize_text_field( $input['mode'] );
+    $valid['bio'] = sanitize_text_field( $input['bio'] );
 
     return $valid;
 }
