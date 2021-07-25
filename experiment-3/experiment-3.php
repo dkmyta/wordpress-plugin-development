@@ -458,3 +458,19 @@ function pdev_related_posts( $content ) {
 	}
     return $content;
 }
+
+// Add a toolbar link ot the Dean's Plugin Settings to the admin screen
+add_action( 'wp_before_admin_bar_render', 'pdev_toolbar' );
+
+function pdev_toolbar() {
+	global $wp_admin_bar;
+
+	if ( current_user_can( 'edit_users' ) ) {
+
+		$wp_admin_bar->add_menu( [
+			'id'    => 'pdev-users',
+			'title' => 'Dean\'s Plugin Settings',
+			'href'  => esc_url( admin_url( 'options-general.php?page=pdev_plugin' ) )
+		] );
+	}
+}
