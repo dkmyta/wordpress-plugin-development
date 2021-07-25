@@ -459,7 +459,7 @@ function pdev_related_posts( $content ) {
     return $content;
 }
 
-// Add a toolbar link ot the Dean's Plugin Settings to the admin screen
+// Add a toolbar link to the Dean's Plugin Settings to the admin screen
 add_action( 'wp_before_admin_bar_render', 'pdev_toolbar' );
 
 function pdev_toolbar() {
@@ -473,4 +473,27 @@ function pdev_toolbar() {
 			'href'  => esc_url( admin_url( 'options-general.php?page=pdev_plugin' ) )
 		] );
 	}
+}
+
+// Transient API usage example
+// Fetches video from third-party website.
+function pdev_fetch_video_title() {
+	// Connect to an API to fetch video.
+	return $title;
+}
+
+// Returns the video title.
+function pdev_get_video_title() {
+
+	// Get transient.
+	$title = get_transient( 'pdev_video_tutorial' );
+
+	// If the transient doesn't exist or is expired, refresh it.
+	if ( ! $title ) {
+		$title = pdev_fetch_video_title();
+
+		set_transient( 'pdev_video_tutorial', $title, DAY_IN_SECONDS );
+	}
+
+	return $title;
 }
