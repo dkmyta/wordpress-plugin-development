@@ -402,7 +402,7 @@ function pdev_nonce_example_template() { ?>
 	</div>
 <?php }
 
-// Apply Related Posts functionality using WordPress Cache API
+// Apply Related Posts list functionality to individual post pages using WordPress Cache API
 add_filter( 'the_content', 'pdev_related_posts' );
 
 function pdev_related_posts( $content ) {
@@ -496,4 +496,38 @@ function pdev_get_video_title() {
 	}
 
 	return $title;
+}
+
+// add_action example using wp_head hook to add text to the site header
+add_action( 'wp_head', 'pdev_header_message', PHP_INT_MAX );
+
+function pdev_header_message() {
+	esc_html_e( 'This site\'s head is powered by Dean.', 'pdev' );
+}
+
+// add_action example using wp_footer hook to add text to the site footer
+add_action( 'wp_footer', 'pdev_footer_message', PHP_INT_MAX );
+
+function pdev_footer_message() {
+	esc_html_e( 'This site\'s foot is powered by Dean.', 'pdev' );
+}
+
+// has_action example to verify if wp_footer hook has actions applied
+if ( has_action( 'wp_footer' ) ) {
+	echo '<p>Actions are registerd for the footer</p>';
+} else {
+	// Test accuracy with remove_all_actions( 'wp_footer' );
+	echo '<p>No actions are registered for the footer</p>';
+}
+
+
+
+// add_action example using pre_get_posts action hook to randomize the order of posts on blog homepage
+add_action( 'pre_get_posts', 'pdev_random_posts' );
+
+function pdev_random_posts( $query ) {
+
+	if ( $query->is_main_query() && $query->is_home() ) {
+		$query->set( 'orderby', 'rand' );
+	}
 }
