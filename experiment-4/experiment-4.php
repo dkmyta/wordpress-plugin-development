@@ -88,6 +88,18 @@ function pdev_uninstall_page() {
 }
 */
 
+// Use plugin_loaded hook to call a setup class
+add_action( 'plugins_loaded', 'pdev_plugin_bootstrap' );
+
+function pdev_plugin_bootstrap() {
+
+	require_once plugin_dir_path( __FILE__ ) . 'src/Setup.php';
+
+	$setup = new \PDEV\Setup();
+
+	$setup->boot();
+}
+
 // Add a menu for our option page
 add_action( 'admin_menu', 'pdev_plugin_add_settings_menu' );
 
@@ -514,13 +526,20 @@ function pdev_footer_message() {
 
 // has_action example to verify if wp_footer hook has actions applied
 if ( has_action( 'wp_footer' ) ) {
-	echo '<p>Actions are registerd for the footer</p>';
+	echo '<p>Actions are registerd for the footer.</p>';
 } else {
 	// Test accuracy with remove_all_actions( 'wp_footer' );
-	echo '<p>No actions are registered for the footer</p>';
+	echo '<p>No actions are registered for the footer.</p>';
 }
 
+// has_action example to print the priority value of the wp_print_footer_scripts action of the wp_footer hook, if it exists
+$priority = has_action( 'wp_footer', 'wp_print_footer_scripts' );
 
+if ( false !== $priority ) {
+	printf(
+		'The wp_print_footer_scripts action has a priority of %d. </br>', absint( $priority )
+	);
+}
 
 // add_action example using pre_get_posts action hook to randomize the order of posts on blog homepage
 add_action( 'pre_get_posts', 'pdev_random_posts' );
