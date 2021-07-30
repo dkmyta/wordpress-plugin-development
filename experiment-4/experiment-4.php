@@ -217,8 +217,11 @@ function pdev_plugin_setting_fname() {
 
     // Get option 'text_string' value from the database
     $options = get_option( 'pdev_plugin_options' );
-    $fname = $options['fname'];
-
+	$fname = '';
+    if ( isset( $options['fname'] ) ) {
+		$fname = $options['fname'];
+	} 
+	
     // Echo the field
     echo "<input id='name' name='pdev_plugin_options[fname]'
         type='text' value='" . esc_attr( $fname ) . "' />";
@@ -230,8 +233,10 @@ function pdev_plugin_setting_lname() {
 
     // Get option 'text_string' value from the database
     $options = get_option( 'pdev_plugin_options' );
-    $lname = $options['lname'];
-
+	$lname = '';
+    if ( isset( $options['lname'] ) ) {
+		$lname = $options['lname'];
+	}
     // Echo the field
     echo "<input id='name' name='pdev_plugin_options[lname]'
         type='text' value='" . esc_attr( $lname ) . "' />";
@@ -288,7 +293,7 @@ function pdev_plugin_setting_mode() {
 
 	// Get option 'mode' value from the database
     // Set to 'false' as a default if the option does not exist
-	$options = get_option( 'pdev_plugin_options' );
+	$options = get_option( 'pdev_plugin_options', [ 'mode' => 0 ] );
 	$mode = $options['mode'];
 
     echo "<input value='0' name='pdev_plugin_options[mode]' type='hidden' />";
@@ -524,22 +529,22 @@ function pdev_footer_message() {
 	esc_html_e( 'This site\'s foot is powered by Dean.', 'pdev' );
 }
 
-// has_action example to verify if wp_footer hook has actions applied
+/* has_action example to verify if wp_footer hook has actions applied
 if ( has_action( 'wp_footer' ) ) {
 	echo '<p>Actions are registerd for the footer.</p>';
 } else {
 	// Test accuracy with remove_all_actions( 'wp_footer' );
 	echo '<p>No actions are registered for the footer.</p>';
-}
+} This causes a Cannot modify header information – headers already sent by... error and saving form input causes WSOD - Why might this be happening? Perhaps it is called too late*/
 
-// has_action example to print the priority value of the wp_print_footer_scripts action of the wp_footer hook, if it exists
+/* has_action example to print the priority value of the wp_print_footer_scripts action of the wp_footer hook, if it exists
 $priority = has_action( 'wp_footer', 'wp_print_footer_scripts' );
 
 if ( false !== $priority ) {
 	printf(
 		'The wp_print_footer_scripts action has a priority of %d. </br>', absint( $priority )
 	);
-}
+} This causes a Cannot modify header information – headers already sent by... error and saving form input causes WSOD*/
 
 // add_action example using pre_get_posts action hook to randomize the order of posts on blog homepage
 add_action( 'pre_get_posts', 'pdev_random_posts' );
