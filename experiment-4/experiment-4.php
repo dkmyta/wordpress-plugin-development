@@ -555,3 +555,30 @@ function pdev_random_posts( $query ) {
 		$query->set( 'orderby', 'rand' );
 	}
 }
+
+// add_filter example to remove "bad words" from post title and content
+add_filter( 'the_title',   'pdev_remove_bad_words' );
+add_filter( 'the_content', 'pdev_remove_bad_words' );
+
+function pdev_remove_bad_words( $text ) {
+
+	$words = [];
+
+	if ( 'the_title' === current_filter() ) {
+		$words = [
+			'test',
+			'bad_word_b'
+		];
+	} elseif ( 'the_content' === current_filter() ) {
+		$words = [
+			'test',
+			'bad_word_d'
+		];
+	}
+
+	if ( $words ) {
+		$text = str_replace( $words, '***', $text );
+	}
+
+	return $text;
+}

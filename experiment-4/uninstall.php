@@ -14,7 +14,7 @@ if ( ! empty( $role ) ) {
 	$role->remove_cap( 'pdev_manage' );
 }
 
-// Register our uninstall function, commented out unnecessary hook registration
+// Register our uninstall function, commented out unnecessary hook registration 
 //register_uninstall_hook( __FILE__, 'pdev_plugin_uninstall' );
 
 // Deregister our settings group and delete all options
