@@ -582,3 +582,31 @@ function pdev_remove_bad_words( $text ) {
 
 	return $text;
 }
+
+// add_filter example to present subscribe input field at the end of post content
+add_filter( 'the_content', 'pdev_content_subscription_form', PHP_INT_MAX );
+
+function pdev_content_subscription_form( $content ) {
+
+	if ( is_singular( 'post' ) && in_the_loop() ) {
+
+		$content .= '<div class="pdev-subscription">
+			<p>Thank you for reading. Please subscribe to my email list for updates.</p>
+			<form method="post">
+				<p>
+					<label>
+					</br>
+						Email:
+						<input type="email" value="" />
+					</label>
+				</p>
+				</br>
+				<p>
+					<input type="submit" value="Submit" />
+				</p>
+			</form>
+		</div>';
+	}
+
+	return $content;
+}
