@@ -120,6 +120,8 @@ function pdev_plugin_option_page() {
             settings_fields( 'pdev_plugin_options' );
 		    do_settings_sections( 'pdev_plugin' );
 		    submit_button( 'Save Changes', 'primary' ); 
+			// Create a Nonce
+			wp_nonce_field( 'name_of_my_action', 'name_of_nonce_field' );
             ?>
 	    </form>
     </div>
@@ -316,6 +318,16 @@ function pdev_plugin_setting_bio() {
 
 // Validate user input for all three options
 function pdev_plugin_validate_options( $input ) {
+
+	// Verify the Nonce
+	if (
+		! isset( $_POST['name_of_nonce_field'] )
+		|| ! wp_verify_nonce( $_POST['name_of_nonce_field'], 'name_of_my_action' )
+	) {
+	   wp_nonce_ays( '' );
+	} 
+
+	// Or verify the Nonce using check_admin_referer( 'name_of_my_action', 'name_of_nonce_field' );
 
 	// Only allow letters and spaces for the fname
     $valid['fname'] = preg_replace(
