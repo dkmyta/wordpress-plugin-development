@@ -1,4 +1,4 @@
-Professional WordPress Plugin Development Chapter 6
+Professional WordPress Plugin Development Chapter 6 and 7
 
 - JavaScript
    - Intro to JavaScript
@@ -13,3 +13,8 @@ Professional WordPress Plugin Development Chapter 6
    - Old reliable: jQuery
    - Middle reliable: Backbone and Underscore
    - New reliable: React
+
+ - Blocks and Gutenberg
+   - Introducing Gutenberg
+   - Using blocks
+   - Using WP-CLI
