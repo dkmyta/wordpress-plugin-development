@@ -8,7 +8,6 @@
     "build": "webpack"
   },
   "author": "",
-<<<<<<< HEAD
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.15.0",
@@ -18,7 +17,4 @@
     "webpack": "^5.51.1",
     "webpack-cli": "^4.8.0"
   }
-=======
-  "license": "ISC"
->>>>>>> e422d25c48dd013336f89b32f2bee28f75bc7c80
 }
