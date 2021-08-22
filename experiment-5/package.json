@@ -1,0 +1,20 @@
+{
+  "name": "experiment-5",
+  "version": "1.0.0",
+  "description": "Professional WordPress Plugin Development Chapter 6 and 7",
+  "main": "pdev.src.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
+  }
+}

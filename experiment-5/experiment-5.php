@@ -318,3 +318,12 @@ function pdev_plugin_validate_options( $input ) {
 
     return $valid;
 }
+
+// Enqueue JavaScript for registering block type
+add_action( 'enqueue_block_editor_assets', function() {
+    wp_enqueue_script(
+        'pdev/hello-world',
+        plugins_url( 'pdev.build.js', __FILE__ ),
+        array( 'wp-blocks', 'wp-element' )
+    );
+} );
