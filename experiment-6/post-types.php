@@ -40,7 +40,7 @@ function pdev_book_collection_post_types() {
 
 		// Text labels.
 		'labels'              => [
-			'name'                     => 'Books',
+			'name'                     => 'Dean\'s Books',
 			'singular_name'            => 'Book',
 			'add_new'                  => 'Add New',
 			'add_new_item'             => 'Add New Book',
