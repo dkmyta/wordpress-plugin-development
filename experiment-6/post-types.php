@@ -7,6 +7,7 @@ function pdev_book_collection_post_types() {
 	register_post_type( 'book', [
 
 		// Post type arguments.
+		//'capability_type'	  => 'book',
 		'public'              => true,
 		'publicly_queryable'  => true,
 		'show_in_rest'        => true,
