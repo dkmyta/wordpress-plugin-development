@@ -335,3 +335,16 @@ require_once plugin_dir_path( __FILE__ ) . 'post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'post-meta.php';
 require_once plugin_dir_path( __FILE__ ) . 'meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'taxonomies.php';
+
+// Display message in footer based on user's logged-in status
+add_action( 'wp_footer', 'pdev_logged_in_message' );
+
+function pdev_logged_in_message() {
+
+    if ( is_user_logged_in() ) {
+        echo '<p>Welcome back! You are currently logged in</p>';
+    } else {
+        echo '<p>You are not logged into the site</p>';
+    }
+
+}
