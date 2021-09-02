@@ -341,10 +341,30 @@ add_action( 'wp_footer', 'pdev_logged_in_message' );
 
 function pdev_logged_in_message() {
 
+    // Count users
+    $count = count_users();
+
+    $current_user = wp_get_current_user();
+
     if ( is_user_logged_in() ) {
-        echo '<p>Welcome back! You are currently logged in</p>';
+        echo '<p>Welcome back ' . $current_user->display_name . '! You are currently logged in.</p>';
+        // Output the total user count
+        printf(
+            '<p>This site has %s users:</p>',
+            absint( $count['total_users'] )
+        );
+        // Output each role and its number of users
+        echo '<ul>';
+        foreach ( $count['avail_roles'] as $role => $user_count ) {
+            printf(
+                '<li>%1$s: %2$s</li>',
+                esc_html( $role ),
+                absint( $user_count )
+            );
+        }
+        echo '</ul>';
     } else {
-        echo '<p>You are not logged into the site</p>';
+        echo '<p>You are not logged into the site.</p>';
     }
 
 }
