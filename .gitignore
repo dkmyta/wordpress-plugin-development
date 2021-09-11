@@ -7,12 +7,12 @@ node_modules
 gutenberg.zip
 coverage
 *-performance-results.json
+pdev.build.js
 
 # Directories/files that may appear in your environment
 *.log
 yarn.lock
 /artifacts
-pdev.build.js
 
 .cache
 *.tsbuildinfo
