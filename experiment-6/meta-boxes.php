@@ -51,7 +51,7 @@ function pdev_book_save_post( $post_id, $post ) {
 
 	// Bail if this is an Ajax request, autosave, or revision.
 	if (
-		wp_is_doing_ajax() ||
+		wp_doing_ajax() ||
 		wp_is_post_autosave( $post_id ) ||
 		wp_is_post_revision( $post_id )
 	) {
@@ -73,7 +73,7 @@ function pdev_book_save_post( $post_id, $post ) {
 		delete_post_meta( $post_id, 'book_author' );
 
 	// If the new value doesn't match the new value add/update.
-	} elseif ( $new_value !== $old_value ) {
-		update_post_meta( $post_id, 'book_author', $new_value );
+	} elseif ( $new_author !== $old_author ) {
+		update_post_meta( $post_id, 'book_author', $new_author );
 	}
 }
