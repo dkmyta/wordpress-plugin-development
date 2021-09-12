@@ -447,16 +447,23 @@ function pdev_force_admin_color() {
 	}
 }
 
-// Update "John Doe" user display_name with wp_update_user
+// Update "John Doe" user display_name to "John Updated" with wp_update_user
 add_action( 'admin_init', 'pdev_update_user' );
 
 function pdev_update_user() {
 
     wp_update_user( [
-        'ID'          => 4,
+        'ID'           => 7,
         'display_name' => 'John Updated'
     ] );
 
 }
 
+// Delete "John Updated" user with wp_delete_user, reassign posts to "Jane Doe"
+// add_action( 'admin_init', 'pdev_delete_user' );
 
+// function pdev_delete_user() {
+    
+//     wp_delete_user( 7, 3 );
+
+// }
