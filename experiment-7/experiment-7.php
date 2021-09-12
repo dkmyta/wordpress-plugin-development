@@ -368,3 +368,93 @@ function pdev_logged_in_message() {
     }
 
 }
+
+// Inset "John Doe" user with wp_insert_user
+add_action( 'init', 'pdev_insert_user' );
+
+function pdev_insert_user() {
+
+	// Bail if the user already exists.
+	if ( username_exists( 'johndoe' ) ) {
+		return;
+	}
+
+	// Create new user.
+	$user = wp_insert_user( [
+		'user_login'   => 'johndoe',
+		'user_email'   => 'john@example.com',
+		'user_pass'    => '123456789',
+		'user_url'     => 'https://wordpress.org',
+		'display_name' => 'John Doe',
+		'role'         => 'editor',
+		'description'  => 'Loves to publish books on WordPress!'
+	] );
+
+	// If the user wasn't created, display error message.
+	if ( is_wp_error( $user ) ) {
+		echo $user->get_error_message();
+	}
+}
+
+// Create "Jane Doe" user with wp_create_user
+add_action( 'init', 'pdev_create_user' );
+
+function pdev_create_user() {
+
+	// Bail if the user already exists.
+	if ( username_exists( 'janedoe' ) ) {
+		return;
+	}
+
+	// Create new user.
+	$user = wp_create_user(
+		'janedoe',
+		'123456789',
+		'jane@example.com'
+	);
+
+	// If the user wasn't created, display error message.
+	if ( is_wp_error( $user ) ) {
+		echo $user->get_error_message();
+	}
+}
+
+// Force current user admin_color to blue with wp_update_user
+add_action( 'admin_init', 'pdev_force_admin_color' );
+
+function pdev_force_admin_color() {
+
+	// Get the current WP_User object.
+	$user = wp_get_current_user();
+
+	// Bail if no current user object.
+	if ( empty( $user ) ) {
+		return;
+	}
+
+	// Get user's admin color scheme.
+	$color = get_user_meta( $user->ID, 'admin_color', true );
+
+	// If not the fresh color scheme, update it.
+	if ( 'blue' !== $color ) {
+
+		wp_update_user( [
+			'ID'          => $user->ID,
+			'admin_color' => 'blue'
+		] );
+	}
+}
+
+// Update "John Doe" user display_name with wp_update_user
+add_action( 'admin_init', 'pdev_update_user' );
+
+function pdev_update_user() {
+
+    wp_update_user( [
+        'ID'          => 4,
+        'display_name' => 'John Updated'
+    ] );
+
+}
+
+
