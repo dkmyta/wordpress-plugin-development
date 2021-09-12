@@ -344,6 +344,7 @@ function pdev_logged_in_message() {
     // Count users
     $count = count_users();
 
+    // Get the current WP_User object.
     $current_user = wp_get_current_user();
 
     if ( is_user_logged_in() ) {
@@ -461,9 +462,32 @@ function pdev_update_user() {
 
 // Delete "John Updated" user with wp_delete_user, reassign posts to "Jane Doe"
 // add_action( 'admin_init', 'pdev_delete_user' );
-
 // function pdev_delete_user() {
-    
 //     wp_delete_user( 7, 3 );
-
 // }
+
+// Various options for creating a WP_User object
+$test = new WP_User( 1 );
+
+echo $test->display_name; 
+
+// Loop for echoing all user's display_name, checking IDs from 1-10
+// What happens when you try to create a new WP_User for a nonexistent ID?
+// for ( $i = 1; $i < 10; $i++ ) {
+//     $test = new WP_User( $i );
+//     echo $test->display_name;
+//     echo " ";
+// }
+
+// Noting that wp_get_current_user and get_userdata functions only work within add_action 
+add_action( 'wp_head', 'pdev_get_current_display_name' );
+
+function pdev_get_current_display_name() {
+
+    echo wp_get_current_user()->display_name;
+
+    echo " ";
+
+    echo get_userdata( 1 )->display_name;
+
+}
