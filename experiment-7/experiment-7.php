@@ -356,11 +356,13 @@ function pdev_logged_in_message() {
         // Output each role and its number of users
         echo '<ul>';
         foreach ( $count['avail_roles'] as $role => $user_count ) {
-            printf(
-                '<li>%1$s: %2$s</li>',
-                esc_html( $role ),
-                absint( $user_count )
-            );
+            if ( $role !== 'none' ) {
+                printf(
+                    '<li>%1$s: %2$s</li>',
+                    esc_html( $role ),
+                    absint( $user_count )
+                );
+            }
         }
         echo '</ul>';
     } else {
