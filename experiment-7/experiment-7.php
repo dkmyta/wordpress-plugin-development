@@ -337,7 +337,9 @@ require_once plugin_dir_path( __FILE__ ) . 'meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'taxonomies.php';
 
 // Display message in footer based on user's logged-in status
-add_action( 'wp_footer', 'pdev_logged_in_message' );
+// wp_footer/wp_head frontend
+// in_admin_footer/in_admin_header backend 
+add_action( 'in_admin_footer', 'pdev_logged_in_message' );
 
 function pdev_logged_in_message() {
 
@@ -467,27 +469,53 @@ function pdev_update_user() {
 // }
 
 // Various options for creating a WP_User object
-$test = new WP_User( 1 );
-
-echo $test->display_name; 
-
-// Loop for echoing all user's display_name, checking IDs from 1-10
-// What happens when you try to create a new WP_User for a nonexistent ID?
-// for ( $i = 1; $i < 10; $i++ ) {
-//     $test = new WP_User( $i );
-//     echo $test->display_name;
-//     echo " ";
-// }
-
 // Noting that wp_get_current_user and get_userdata functions only work within add_action 
 add_action( 'wp_head', 'pdev_get_current_display_name' );
 
 function pdev_get_current_display_name() {
 
-    echo wp_get_current_user()->display_name;
+    $test = new WP_User( 1 );
 
-    echo " ";
+    // Loop for echoing all user's display_name, checking IDs from 1-10
+    // What happens when you try to create a new WP_User for a nonexistent ID?
+    // for ( $i = 1; $i < 10; $i++ ) {
+    //     $test = new WP_User( $i );
+    //     echo $test->display_name;
+    //     echo " ";
+    // }
+
+    echo $test->display_name . " ";
+
+    echo wp_get_current_user()->display_name . " ";
 
     echo get_userdata( 1 )->display_name;
+
+}
+
+// Apply user rating system functionality based on number of posts using count_user_posts
+add_action( 'save_post', 'pdev_add_user_rating' );
+
+function pdev_add_user_rating() {
+
+	// Get the current user object.
+	$user = wp_get_current_user();
+
+	// Get the user's current rating.
+	$rating = get_user_meta( $user->ID, 'user_rating', true );
+
+	// Bail if user already has gold rating.
+	if ( 'gold' === $rating ) {
+		return;
+	}
+
+	// Get the user's post count.
+	$posts = count_user_posts( $user->ID );
+
+	// Update the user's rating based on number of posts.
+	if ( 50 <= $posts ) {
+		update_user_meta( $user->ID, 'user_rating', 'gold' );
+	} elseif ( 25 <= $posts ) {
+		update_user_meta( $user->ID, 'user_rating', 'silver' );
+	}
 
 }
