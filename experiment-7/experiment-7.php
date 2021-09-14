@@ -32,6 +32,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+// Add register_activation_hook to primary plugin file
+register_activation_hook( __FILE__, function() {
+	require_once plugin_dir_path( __FILE__ ) . 'src/Activation.php';
+	\PDEV\Activation::activate();
+} );
+
+// Add register_deactivation_hook to primary plugin file
+register_deactivation_hook( __FILE__, function() {
+	require_once plugin_dir_path( __FILE__ ) . 'src/Deactivation.php';
+	\PDEV\Deactivation::deactivate();
+} );
+
 // Use plugin_loaded hook to call a setup class
 add_action( 'plugins_loaded', 'pdev_plugin_bootstrap' );
 
