@@ -504,7 +504,7 @@ function pdev_get_current_display_name() {
 
     echo $test->display_name . " ";
 
-    echo wp_get_current_user()->display_name . " ";
+    echo wp_get_current_user()->display_name . " "; // Will only show if the site viewer is logged in
 
     echo get_userdata( 1 )->display_name;
 
@@ -605,3 +605,83 @@ function pdev_user_favorite_post_update( $user_id ) {
 		update_user_meta( $user_id, 'favorite_post', $new_value );
 	}
 }
+
+// Register single cron event, no deactivation necessary
+register_activation_hook( __FILE__, 'pdev_cron_single_activation' );
+
+function pdev_cron_single_activation() {
+
+	$args = [
+		'example@example.com'
+	];
+
+	if ( ! wp_next_scheduled( 'pdev_single_email', $args ) ) {
+
+		wp_schedule_single_event( time() + 3600, 'pdev_single_email', $args );
+	}
+}
+
+add_action( 'pdev_single_email', 'pdev_send_email_once' );
+
+function pdev_send_email_once( $email ) {
+
+	wp_mail(
+		sanitize_email( $email ),
+		'Plugin Name - Thanks',
+		'Thank you for using my plugin! If you need help with it, let me know.'
+	);
+}
+
+// Register recurring cron event, with deactivation hook registered to unschedule event
+register_activation_hook( __FILE__, 'pdev_cron_example_activation' );
+
+function pdev_cron_activation() {
+
+	if ( ! wp_next_scheduled( 'pdev_example_event' ) ) {
+		wp_schedule_event( time(), 'hourly', 'pdev_example_event' );
+	}
+}
+
+register_deactivation_hook( __FILE__, 'pdev_cron_example_deactivation' );
+
+function pdev_cron_example_deactivation() {
+
+	$timestamp = wp_next_scheduled( 'pdev_example_event' );
+
+	if ( $timestamp ) {
+		wp_unschedule_event( $timestamp, 'pdev_example_event' );
+	}
+}
+
+add_action( 'pdev_example_event', 'pdev_example_email' );
+
+function pdev_example_email() {
+
+	wp_mail(
+		'example@example.com',
+		'Reminder',
+		'Hey, remember to do that important thing!'
+	);
+}
+
+// Create custom cron interval (other than default values hourly, daily, twicedaily)
+add_filter( 'cron_schedules', 'pdev_custom_schedules' );
+
+function pdev_custom_schedules( $schedules ) {
+
+	$schedules['weekly'] = [
+		'interval' => 604800,
+		'display'  => 'Once Weekly'
+	];
+
+	return $schedules;
+}
+
+// Run with wp_schedule_events( time(), 'weekly', 'pdev_custom_event' );
+
+// Create a custom menu item within Tools for viewing schedule cron events
+require_once plugin_dir_path( __FILE__ ) . 'src/View.php';
+
+$pdev_scheduled = new \PDEV\ScheduledEvents\View();
+
+$pdev_scheduled->boot();
