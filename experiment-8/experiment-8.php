@@ -38,7 +38,7 @@ register_activation_hook( __FILE__, function() {
 	\PDEV\Activation::activate();
 } );
 
-// Require register_deactivation_hook file instead
+// Require register_deactivation_hook file instead - *Does not work
 // require_once plugin_dir_path( __FILE__ ) . 'src/register-activation-hook.php';
 
 // Add register_deactivation_hook direct to primary plugin file
@@ -47,7 +47,7 @@ register_deactivation_hook( __FILE__, function() {
 	\PDEV\Deactivation::deactivate();
 } );
 
-// Require register_deactivation_hook file instead
+// Require register_deactivation_hook file instead - *Does not work
 // require_once plugin_dir_path( __FILE__ ) . 'src/register-deactivation-hook.php';
 
 // Use plugin_loaded hook to call a setup class
@@ -635,7 +635,7 @@ function pdev_send_email_once( $email ) {
 // Register recurring cron event, with deactivation hook registered to unschedule event
 register_activation_hook( __FILE__, 'pdev_cron_example_activation' );
 
-function pdev_cron_activation() {
+function pdev_cron_example_activation() {
 
 	if ( ! wp_next_scheduled( 'pdev_example_event' ) ) {
 		wp_schedule_event( time(), 'hourly', 'pdev_example_event' );
@@ -685,3 +685,51 @@ require_once plugin_dir_path( __FILE__ ) . 'src/View.php';
 $pdev_scheduled = new \PDEV\ScheduledEvents\View();
 
 $pdev_scheduled->boot();
+
+//Register a cron event to send email reminders to specified address if no posts have been published in 3 days
+register_activation_hook( __FILE__, 'pdev_pester_activate' );
+
+function pdev_pester_activate() {
+
+	if ( ! wp_next_scheduled( 'pdev_pester_event' ) ) {
+		wp_schedule_event( time(), 'daily', 'pdev_pester_event' );
+	}
+}
+
+register_deactivation_hook( __FILE__, 'pdev_pester_deactivate' );
+
+function pdev_pester_deactivate() {
+
+	$timestamp = wp_next_scheduled( 'pdev_pester_event' );
+
+	if ( false !== $timestamp ) {
+		wp_unschedule_event( $timestamp, 'pdev_pester_event' );
+	}
+}
+
+add_action( 'pdev_pester_event', 'pdev_pester_check' );
+
+function pdev_pester_check() {
+	global $wpdb;
+
+	// Query the latest published post date.
+	$query = "SELECT post_date
+	          FROM $wpdb->posts
+	          WHERE post_status = 'publish'
+		  AND post_type = 'post'
+		  ORDER BY post_date
+		  DESC LIMIT 1";
+
+	$latest_post_date = $wpdb->get_var( $wpdb->prepare( $query ) );
+
+	// Check if latest post is older than three days.
+	// If it is, send email reminder.
+	if ( strtotime( $latest_post_date ) <= strtotime( '-3 days' ) ) {
+
+		$email   = 'example@example.com';
+		$subject = 'Blog Reminder';
+		$message = 'Hey! You have not written a blog post in three days!';
+
+		wp_mail( $email, $subject, $message );
+	}
+}
