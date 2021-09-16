@@ -371,7 +371,12 @@ function pdev_logged_in_message() {
         echo '<p>Welcome back ' . $current_user->display_name . '! You are currently logged in.</p>';
         // Output the total user count
         printf(
-            '<p>This site has %s users:</p>',
+			_n( 
+				'<p>This site has %s user:</p>',
+				'<p>This site has %s users:</p>',
+				$count['total_users'],
+				'experiment-9'
+			),
             absint( $count['total_users'] )
         );
         // Output each role and its number of users
@@ -393,6 +398,9 @@ function pdev_logged_in_message() {
 }
 
 // Inset "John Doe" user with wp_insert_user
+// With this here its impossible to delete the user, 
+// they are just regenerated again with a new ID
+// What could you use so they are only created once?
 add_action( 'init', 'pdev_insert_user' );
 
 function pdev_insert_user() {
@@ -420,6 +428,8 @@ function pdev_insert_user() {
 }
 
 // Create "Jane Doe" user with wp_create_user
+// With this here its impossible to delete the user, 
+// they are just regenerated again with a new ID
 add_action( 'init', 'pdev_create_user' );
 
 function pdev_create_user() {
@@ -477,36 +487,6 @@ function pdev_update_user() {
         'ID'           => 7,
         'display_name' => 'John Updated'
     ] );
-
-}
-
-// Delete "John Updated" user with wp_delete_user, reassign posts to "Jane Doe"
-// add_action( 'admin_init', 'pdev_delete_user' );
-// function pdev_delete_user() {
-//     wp_delete_user( 7, 3 );
-// }
-
-// Various options for creating a WP_User object
-// Noting that wp_get_current_user and get_userdata functions only work within add_action 
-add_action( 'wp_head', 'pdev_get_current_display_name' );
-
-function pdev_get_current_display_name() {
-
-    $test = new WP_User( 1 );
-
-    // Loop for echoing all user's display_name, checking IDs from 1-10
-    // What happens when you try to create a new WP_User for a nonexistent ID?
-    // for ( $i = 1; $i < 10; $i++ ) {
-    //     $test = new WP_User( $i );
-    //     echo $test->display_name;
-    //     echo " ";
-    // }
-
-    echo $test->display_name . " ";
-
-    echo wp_get_current_user()->display_name . " "; // Will only show if the site viewer is logged in
-
-    echo get_userdata( 1 )->display_name;
 
 }
 
@@ -677,7 +657,7 @@ function pdev_custom_schedules( $schedules ) {
 	return $schedules;
 }
 
-// Run with wp_schedule_events( time(), 'weekly', 'pdev_custom_event' );
+// Use this custom interval with wp_schedule_events( time(), 'weekly', 'pdev_custom_event' );
 
 // Create a custom menu item within Tools for viewing schedule cron events
 require_once plugin_dir_path( __FILE__ ) . 'src/View.php';
@@ -685,3 +665,34 @@ require_once plugin_dir_path( __FILE__ ) . 'src/View.php';
 $pdev_scheduled = new \PDEV\ScheduledEvents\View();
 
 $pdev_scheduled->boot();
+
+// Prepare text domain for internationalization
+add_action( 'init', 'pdev_load_textdomain' );
+
+function pdev_load_textdomain() {
+
+	load_plugin_textdomain( 'experiment-8', false, 'experiment-8/languages' );
+
+}
+
+// printf and _n example for conditional text
+add_action( 'wp_head', 'pdev_test' );
+
+function pdev_test() {
+	$count_posts = wp_count_posts();
+
+	$count = $count_posts->publish;
+
+	$site_name = get_bloginfo( 'name' );
+
+	printf(
+		_n( 
+		'There is %1$s post published on %2$s',
+		'There are %1$s posts published on %2$s',
+		$count,
+		'experiment-8'
+		),
+	$count, $site_name
+	);
+
+}
