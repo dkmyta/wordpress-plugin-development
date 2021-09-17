@@ -667,13 +667,13 @@ $pdev_scheduled = new \PDEV\ScheduledEvents\View();
 $pdev_scheduled->boot();
 
 // Prepare text domain for internationalization
-add_action( 'init', 'pdev_load_textdomain' );
+// add_action( 'init', 'pdev_load_textdomain' );
 
-function pdev_load_textdomain() {
+// function pdev_load_textdomain() {
 
-	load_plugin_textdomain( 'experiment-8', false, 'experiment-8/languages' );
+// 	load_plugin_textdomain( 'experiment-9', false, 'experiment-9/languages' );
 
-}
+// }
 
 // printf and _n example for conditional text
 add_action( 'wp_head', 'pdev_test' );
@@ -690,9 +690,76 @@ function pdev_test() {
 		'There is %1$s post published on %2$s',
 		'There are %1$s posts published on %2$s',
 		$count,
-		'experiment-8'
+		'experiment-9'
 		),
 	$count, $site_name
 	);
 
 }
+
+// Introduce alert box functionality - internationalizing JS example
+/* Add the translation function after the plugins loaded hook. */
+add_action( 'plugins_loaded', 'pdev_alert_box_load_translation' );
+             
+/**
+ * Loads a translation file if the paged being viewed isn't in the admin.
+ *
+ * @since 0.1
+ */
+function pdev_alert_box_load_translation() {
+             
+    /* If we're not in the admin, load any translation of our plugin. */
+    if ( !is_admin() )
+       load_plugin_textdomain( 'experiment-9', false, 'experiment-9/languages' );
+}
+
+/* Add our script function to the print scripts action. */
+add_action( 'wp_print_scripts', 'pdev_alert_box_load_script' );
+             
+/**
+ * Loads the alert box script and localizes text strings that need translation.
+ *
+ * @since 0.1
+ */
+function pdev_alert_box_load_script() {
+             
+    /* If we're in the WordPress admin, don't go any farther. */
+    if ( is_admin() )
+        return;
+             
+    /* Get script path and file name. */
+    $script = trailingslashit( plugins_url( 'experiment-9' ) ) .'pdev-alert-box-script.js';
+             
+    /* Enqueue our script for use. */
+    wp_enqueue_script( 'experiment-9', $script, false, 0.1 );
+             
+    /* Localize text strings used in the JavaScript file. */
+    wp_localize_script( 'experiment-9', 'pdev_alert_box_L10n', array(
+        'pdev_box_1' => __( 'Alert boxes are annoying!', 'experiment-9' ),
+        'pdev_box_2' => __( 'They are really annoying!', 'experiment-9' ),
+    ) );
+}
+
+/* Add our alert box buttons to the site footer. */
+add_action( 'wp_footer', 'pdev_alert_box_display_buttons' );
+             
+/**
+ * Displays two input buttons with a paragraph.  Each button has an onClick()
+ * event that loads a JavaScript alert box.
+ *
+ * @since 0.1
+ */
+function pdev_alert_box_display_buttons() {
+             
+    /* Get the HTML for the first input button. */
+    $pdev_alert_box_buttons = '<input type="button" onclick="pdev_show_alert_box_1()"
+    value="' . esc_attr__( 'Press me!', 'experiment-9' ) . '" />';
+             
+    /* Get the HTML for the second input button. */
+    $pdev_alert_box_buttons .= '<input type="button" onclick="pdev_show_alert_box_2()"
+    value="' . esc_attr__( 'Now press me!', 'experiment-9' ) . '" />';
+             
+    /* Wrap the buttons in a paragraph tag. */
+    echo '<p>' . $pdev_alert_box_buttons . '</p>';
+}
+     
