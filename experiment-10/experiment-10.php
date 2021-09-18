@@ -346,8 +346,6 @@ add_action( 'enqueue_block_editor_assets', function() {
     );
 } );
 
-// Register custom post type for Book Collection
-
 // Load custom post type functions.
 require_once plugin_dir_path( __FILE__ ) . 'post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'post-meta.php';
@@ -397,7 +395,7 @@ function pdev_logged_in_message() {
 
 }
 
-// Inset "John Doe" user with wp_insert_user
+// Insert "John Doe" user with wp_insert_user
 // With this here its impossible to delete the user, 
 // they are just regenerated again with a new ID
 // What could you use so they are only created once?
