@@ -715,7 +715,7 @@ add_action( 'admin_menu', 'pdev_create_menu' );
 function pdev_create_menu() {
              
     // Create custom top-level menu
-    add_menu_page( 'PDEV Movies Page', 'PDEV Movies',
+    add_menu_page( 'Dean\'s Movies Page', 'Dean\'s Movies',
         'manage_options', 'pdev-movies', 'pdev_movie_api_results',
         'dashicons-smiley', 99 );
              
