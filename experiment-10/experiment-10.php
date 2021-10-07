@@ -759,3 +759,109 @@ function pdev_movie_api_results() {
     }
 
 }
+
+// Apply logging of all HTTP requests into a flat text file for further analysis
+// Hook into filters
+add_filter( 'http_request_args', 'pdev_http_log_request', 10, 2 );
+add_filter( 'http_response', 'pdev_http_log_response', 10, 3 );
+        
+// Log requests.
+// Parameters passed: request parameters and URL
+function pdev_http_log_request( $r, $url ) {
+        
+    // Get request parameters formatted for display
+    $params = print_r( $r, true );
+        
+    // Get date with format 2010-11-25 @ 13:37:00
+    $date = date( 'Y-m-d @ H:i:s' );
+        
+    // Message to log:
+    $log = <<<LOG
+    $date: request sent to $url
+    Parameters: $params
+    --------------
+        
+LOG;
+        
+    // Log message into flat file
+    error_log( $log, 3, dirname( __FILE__ ).'/http.log' );
+        
+    // Don't forget to return the requests arguments!
+    return $r;
+}
+        
+// Log responses
+// Parameters passed: server response, requests parameters and URL
+function pdev_http_log_response( $response, $r, $url ) {
+        
+    // Get server response formatted for display
+    $resp = print_r( $response, true );
+        
+    // Get date with format 2010-11-25 @ 13:37:00
+    $date = date( 'Y-m-d @ H:i:s' );
+        
+    // Message to log:
+    $log = <<<LOG
+    $date: response received from $url
+    Response: $resp
+    --------------
+        
+LOG;
+        
+    // Log message into flat file
+    error_log( $log, 3, dirname( __FILE__ ).'/http.log' );
+        
+    // Don't forget to return the response!
+    return $response;
+        
+}
+
+// Set API URL with Basic Authentication
+// add_action( 'wp_head', 'test' );
+
+// function test() {
+
+// 	// How to secure $username and $password?!
+// 	$username = 'YOUR_USERNAME';	
+
+// 	$password = 'YOUR_PASSWORD';
+
+// 	$url = 'https://woocommerceexample.com/wp-json/wc/v3/products?per_page=100';
+
+// 	$args = array(
+// 		'headers' => array(
+// 			'Authorization' => 'Basic ' . base64_encode( $username . ':' . $password )
+// 		)
+// 	);
+
+// 	$request = wp_remote_get( $url, $args );
+
+// 	//Or supply the username:password as ?consumer_key and &consumer_secret parameters
+// 	//$request = wp_remote_get( 'https://woocommerceexample.com/wp-json/wc/v3/products?consumer_key=YOUR_USERNAME&consumer_secret=YOUR_PASSWORD' );
+
+// 	if( is_wp_error( $request ) ) {
+// 		return false;
+// 	}
+
+// 	$body = wp_remote_retrieve_body( $request );
+
+// 	$data = json_decode( $body );
+
+// 	//print_r( $data );
+
+// 	if( ! empty( $data ) ) {
+			
+// 		echo '<ul>';
+
+// 		foreach( $data as $product ) {
+
+// 			echo '<li>';
+// 				echo $product->name . ' @ $' . $product->regular_price;
+// 			echo '</li>';
+
+// 		}
+
+// 		echo '</ul>';
+// 	}
+
+// }
