@@ -628,3 +628,404 @@ function pdev_load_textdomain() {
 	load_plugin_textdomain( 'experiment-10', false, 'experiment-10/languages' );
 
 }
+
+// To enable Multisite, the following must be added to the site's wp-config.php 
+// define( 'WP_ALLOW_MULTSITE', true );
+
+// Multisite site switching example
+add_action( 'admin_menu', 'pdev_multisite_switch_menu' );
+             
+function pdev_multisite_switch_menu() {
+             
+    //create custom top-level menu
+    add_menu_page( 'Multisite Switch', 'Multisite Switch',
+        'manage_options',
+        'pdev-network-switch', 'pdev_multisite_switch_page' );
+             
+}
+             
+function pdev_multisite_switch_page() {
+             
+    if ( is_multisite() ) {
+             
+        //switch to blog ID 3
+        switch_to_blog( 2 );
+             
+        //create a custom Loop
+        $recent_posts = new WP_Query();
+        $recent_posts->query( 'posts_per_page=5' );
+             
+        //start the custom Loop
+        while ( $recent_posts->have_posts() ) :
+            $recent_posts->the_post();
+             
+            //store the recent posts in a variable
+            echo '<p><a href="' .get_permalink(). '">' .
+                get_the_title() .'</a></p>';
+             
+        endwhile;
+             
+        //restore the current site
+        restore_current_blog();
+             
+    }
+             
+}
+
+// Multisite site switching shortcode example
+add_shortcode( 'network_posts', 'pdev_multisite_network_posts' );
+             
+function pdev_multisite_network_posts( $attr ) {
+    extract( shortcode_atts( array(
+            "site_id"    =>    '1',
+            "num"        =>    '5'
+            ), $attr ) );
+             
+    if ( is_multisite() ) {
+             
+        $return_posts = '';
+             
+        //switch to site set in the shortcode
+        switch_to_blog( absint( $site_id ) );
+             
+        //create a custom Loop
+        $recent_posts = new WP_Query();
+        $recent_posts->query( 'posts_per_page=' .absint( $num ) );
+             
+        //start the custom Loop
+        while ( $recent_posts->have_posts() ) :
+            $recent_posts->the_post();
+             
+            //store the recent posts in a variable
+            $return_posts .= '<p><a href="' .get_permalink().
+                '">' .get_the_title() .'</a></p>';
+             
+        endwhile;
+             
+        //restore the current site
+        restore_current_blog();
+             
+        //return the results to display
+        return $return_posts;
+             
+    }
+}
+
+// Multisite network posts example
+add_shortcode( 'latest_network_posts',
+    'pdev_multisite_latest_network_posts' );
+             
+function pdev_multisite_latest_network_posts() {
+             
+    if ( is_multisite() ) {
+             
+        $return_posts = '';
+             
+        //get posts from current site
+        $local_posts = get_posts( 'numberposts=5' );
+             
+        //switch to blog ID 3
+        switch_to_blog( 3 );
+             
+        //get posts from another site
+        $network_posts = get_posts( 'numberposts=5' );
+             
+        //restore the current site
+        restore_current_blog();
+             
+        //merge the two arrays
+        $posts = array_merge( $local_posts, $network_posts );
+             
+        //sort the post results by date
+        usort( $posts, 'pdev_multisite_sort_posts_array' );
+             
+        foreach ( $posts as $post ) {
+             
+            //store latest posts in a variable
+            $return_posts .= $post->post_title .' - posted on '
+                .$post->post_date .'<br />';
+             
+        }
+             
+        //return the results to display
+        return $return_posts;
+             
+    }
+             
+}
+             
+//sort the array by date
+function pdev_multisite_sort_posts_array( $a, $b ) {
+             
+    //if dates are the same return 0
+    if ($a->post_date == $b->post_date)
+        return 0;
+             
+    //ternary operator to determine which date is newer
+    return $a->post_date < $b->post_date ? 1 : -1;
+             
+}
+
+// Multisite recent posts widget example
+//widgets_init action hook to execute custom function
+add_action( 'widgets_init', 'pdev_multisite_register_widget' );
+             
+//register our widget
+function pdev_multisite_register_widget() {
+    register_widget( 'pdev_multisite_widget' );
+}
+             
+//pdev_multisite_widget class
+class PDEV_Multisite_Widget extends WP_Widget {
+
+    //process our new widget
+    function __construct() {
+             
+        $widget_ops = array( 'classname' => 'pdev_multisite_widget',
+            'description' =>
+                'Display recent posts from a network site.' );
+        parent::__construct( 'pdev_multisite_widget_posts',
+            'Multisite Recent Posts', $widget_ops );
+             
+    }
+             
+     //build our widget settings form
+    function form( $instance ) {
+        global $wpdb;
+             
+        $defaults = array( 'title' => 'Recent Posts',
+            'disp_number' => '5' );
+        $instance = wp_parse_args( (array) $instance, $defaults );
+        $title = $instance['title'];
+        $siteid = $instance['siteid'];
+        $disp_number = $instance['disp_number'];
+             
+        //title textfield widget option
+        echo '<p>Title: <input class="widefat" name="'
+            .$this->get_field_name( 'title' )
+            . '" type="text" value="' .esc_attr( $title )
+            . '" /></p>';
+             
+        //get a list of all public site IDs
+        $args = array (
+            'public' => '1'
+        );
+
+        $sites = get_sites( $args );
+
+        if ( is_array( $sites ) ) {
+
+            echo '<p>';
+            echo 'Site to display recent posts';
+            echo '<select name="' .$this->get_field_name('siteid')
+                .'" class="widefat" >';
+             
+            //loop through the blog IDs
+            foreach ($sites as $site) {
+             
+                //display each site as an option
+                echo '<option value="' .$site->blog_id. '" '
+                    .selected( $site->blog_id, $siteid )
+                    . '>' .get_blog_details( $site->blog_id )->blogname
+                    . '</option>';
+             
+            }
+             
+            echo '</select>';
+            echo '</p>';
+        }
+             
+        //number to display textfield widget option
+        echo '<p>Number to display: <input class="widefat" name="'
+            .$this->get_field_name( 'disp_number' ). '" type="text"
+            value="' .esc_attr( $disp_number ). '" /></p>';
+             
+    }
+             
+      //save the widget settings
+    function update( $new_instance, $old_instance ) {
+             
+        $instance = $old_instance;
+        $instance['title'] = strip_tags( $new_instance['title'] );
+        $instance['siteid'] = absint( $new_instance['siteid'] );
+        $instance['disp_number'] =
+            absint( $new_instance['disp_number'] );
+             
+        return $instance;
+    }
+             
+     //display the widget
+    function widget( $args, $instance ) {
+        extract( $args );
+             
+        echo $before_widget;
+             
+        //load the widget options
+        $title = apply_filters( 'widget_title', $instance['title'] );
+        $siteid = empty( $instance['siteid'] ) ? 1 :
+            $instance['siteid'];
+         $disp_number = empty( $instance['disp_number'] ) ? 5 :
+             $instance['disp_number'];
+             
+         //display the widget title
+        if ( !empty( $title ) ) { echo $before_title . $title
+            . $after_title; };
+             
+        echo '<ul>';
+             
+        //switch to site saved
+        switch_to_blog( absint( $siteid ) );
+             
+        //create a custom loop
+        $recent_posts = new WP_Query();
+        $recent_posts->query( 'posts_per_page='
+            .absint( $disp_number ) );
+             
+        //start the custom Loop
+        while ( $recent_posts->have_posts() ) :
+            $recent_posts->the_post();
+             
+            //display the recent post title with link
+            echo '<li><a href="' .get_permalink(). '">'
+                .get_the_title() .'</a></li>';
+             
+        endwhile;
+             
+        //restore the current site
+        restore_current_blog();
+             
+        echo '</ul>';
+        echo $after_widget;
+             
+    }
+             
+}
+
+// Multisite create site example
+add_action( 'admin_menu', 'pdev_multisite_create_menu' );
+             
+function pdev_multisite_create_menu() {
+             
+    //create custom top-level menu
+    add_menu_page( 'Multisite Create Site Page',
+        'Multisite Create Site',
+        'manage_options', 'pdev-network-create',
+        'pdev_multisite_create_site_settings' );
+             
+}
+             
+function pdev_multisite_create_site_settings() {
+             
+    //check if multisite is enabled
+    if ( is_multisite() ) {
+             
+        //if the form was submitted lets process it
+        if ( isset( $_POST['create_site'] ) ) {
+             
+            //populate the variables based on form values
+            $domain = sanitize_text_field( $_POST['domain'] );
+            $path = sanitize_text_field( $_POST['path'] );
+            $title = sanitize_text_field( $_POST['title'] );
+            $user_id = absint( $_POST['user_id'] );
+             
+            //verify the required values are set
+            if ( $domain && $path && $title && $user_id ) {
+             
+                //create the new site in WordPress
+                $new_site = wpmu_create_blog( $domain, $path,
+                    $title, $user_id );
+             
+                //if successfully display a message
+                if ( $new_site ) {
+             
+                    echo '<div class="notice notice-success is-dismissible">New site '
+                        .$new_site. ' created successfully!</div>';
+             
+             
+                }
+             
+            //if required values are not set display an error
+            } else {
+             
+                echo '<div class="notice notice-error is-dismissible">
+                    New site could not be created.
+                    Required fields are missing
+                    </div>';
+             
+            }
+             
+        }
+        ?>
+        <div class="wrap">
+            <h2>Create New Site</h2>
+            <form method="post">
+            <table class="form-table">
+            <tr valign="top">
+                <th scope="row">
+                    <label for="fname">Domain</label>
+                </th>
+                <td><input maxlength="45" size="25" name="domain"
+                        value="<?php echo DOMAIN_CURRENT_SITE; ?>" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="fname">Path</label></th>
+                <td>
+                    <input maxlength="45" size="10" name="path" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><label for="fname">Title</label></th>
+                <td>
+                    <input maxlength="45" size="25" name="title" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <th scope="row">
+                    <label for="fname">User ID</label>
+                </th>
+                <td>
+                    <input maxlength="45" size="3" name="user_id" />
+                </td>
+            </tr>
+            <tr valign="top">
+                <td>
+                <input type="submit" name="create_site"
+                    value="Create Site" class="button-primary" />
+                <input type="submit" name="reset" value="Reset"
+                    class="button-secondary" />
+                </td>
+            </tr>
+            </table>
+            </form>
+        </div>
+        <?php
+    } else {
+             
+        echo '<p>Multisite is not enabled</p>';
+             
+    }
+             
+}
+
+// Multisite add user example
+add_action( 'init', 'pdev_multisite_add_user_to_site' );
+             
+function pdev_multisite_add_user_to_site() {
+             
+    //verify user is logged in before proceeding
+    if( !is_user_logged_in() )
+        return false;
+             
+    //load current blog ID and user data
+    global $current_user,$blog_id;
+             
+    //verify user is not a member of this site
+    if( !is_user_member_of_blog() ) {
+             
+        //add user to this site as a subscriber
+        add_user_to_blog( $blog_id, $current_user->ID, 'subscriber' );
+             
+    }
+             
+}
