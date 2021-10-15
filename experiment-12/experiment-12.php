@@ -916,3 +916,13 @@ function pdev_pullquote_shortcode( $attr, $content = '' ) {
 		wpautop( wp_kses_post( $content ) )
 	);
 }
+
+// Register custom Favorites widget
+//namespace PDEV\Favorites;
+
+add_action( 'widgets_init', function() {
+
+	require_once plugin_dir_path( __FILE__ ) . 'Widget.php';
+
+	register_widget( __NAMESPACE__ . '\Widget' );
+} );
