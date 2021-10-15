@@ -725,3 +725,40 @@ function pdev_movie_api_results() {
 
 }
 
+// Example WP_Query using The Loop
+add_action( 'wp_footer', 'test_query' );
+
+function test_query() {
+
+// Query 5 booka
+$query = new WP_Query( [
+	'post_type' => 'book',
+	'posts_per_page' => 5
+] );
+
+// Check if there are any books before output
+if ( $query->have_posts() ) {
+	// Loop through the found posts
+	while ( $query->have_posts() ) {
+		$query->the_post();
+		// Display posts attributes
+		the_title();
+		the_ID();
+		the_author();
+		the_category();
+		the_tags();
+		the_excerpt();
+		the_content();
+		the_permalink();
+		the_shortlink();
+		the_meta();
+		the_date();
+		the_time();	
+	}
+
+}
+// Reset post data *This is key!
+wp_reset_postdata();
+
+}
+
