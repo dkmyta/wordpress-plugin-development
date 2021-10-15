@@ -1,7 +1,7 @@
 <?php
 //namespace PDEV\Favorites;
 
-use WP_Widget;
+//use WP_Widget;
 
 class Widget extends WP_Widget {
 

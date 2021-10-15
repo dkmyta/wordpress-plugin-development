@@ -926,3 +926,21 @@ add_action( 'widgets_init', function() {
 
 	register_widget( __NAMESPACE__ . '\Widget' );
 } );
+
+// Apply simple dashboard widget
+add_action( 'wp_dashboard_setup', 'pdev_simple_dashboard_register' );
+
+// Registers dashboard widgets.
+function pdev_simple_dashboard_register() {
+
+	wp_add_dashboard_widget(
+		'pdev-simple-dashboard',
+		'Dean\'s Plugin: Report Bugs',
+		'pdev_simple_dashboard_display'
+	);
+}
+
+// Dashboard widget callback.
+function pdev_simple_dashboard_display() {
+	echo '<p>Please contact support@example.com to report bugs.</p>';
+}
