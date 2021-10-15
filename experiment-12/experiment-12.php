@@ -893,3 +893,26 @@ function pdev_custom_posts_shortcode( $attr ) {
 	// Return shortcode HTML.
 	return $html;
 }
+
+// Apply pullquote shortcode example
+add_action( 'init', 'pdev_register_pullquote_shortcodes' );
+
+// Register shortcodes.
+function pdev_register_pullquote_shortcodes() {
+	add_shortcode( 'pdev_pullquote', 'pdev_pullquote_shortcode' );
+}
+
+// Shortcode callback function.
+function pdev_pullquote_shortcode( $attr, $content = '' ) {
+
+	// Bail if there is no content.
+	if ( ! $content ) {
+		return '';
+	}
+
+	// Return formatted content.
+	return sprintf(
+		'<blockquote class="pdev-pullquote">%s</blockquote>',
+		wpautop( wp_kses_post( $content ) )
+	);
+}
